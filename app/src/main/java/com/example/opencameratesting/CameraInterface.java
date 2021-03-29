@@ -60,14 +60,18 @@ public class CameraInterface extends BasicApplicationInterface {
 
     private boolean used_front_screen_flash;
     private final Rect text_bounds = new Rect();
+    private boolean isVideoMode = false;
+    private String orientation = "landscape";
     private TakePhotoListener takePhotoListener;
 
-    public CameraInterface(MainActivity activity) {
+    public CameraInterface(MainActivity activity, boolean isVideoMode, String orientation) {
         this.mainActivity = activity;
         this.drawPreview = new DrawPreview(mainActivity, this);
         this.gyroSensor = new GyroSensor(mainActivity);
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         this.locationSupplier = new LocationSupplier(mainActivity);
+        this.isVideoMode = isVideoMode;
+        this.orientation = orientation;
 
         this.reset();
     }
@@ -221,6 +225,10 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public boolean isVideoPref() {
+        if(isVideoMode) {
+            return sharedPreferences.getBoolean(PreferenceKeys.IsVideoPreferenceKey, false);
+        }
+
         return super.isVideoPref();
     }
 
@@ -366,7 +374,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public String getLockOrientationPref() {
-        return "portrait";
+        return orientation;
     }
 
     @Override

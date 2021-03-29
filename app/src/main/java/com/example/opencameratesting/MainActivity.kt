@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
     private val texture: FrameLayout by lazy { findViewById(R.id.texture) }
     private val zoomSeekbar: SeekBar by lazy { findViewById(R.id.zoom_seekbar) }
 
-    private val cameraVideoHelper by lazy { CameraVideoHelper(this, texture) }
+    private val cameraVideoHelper by lazy {
+        CameraVideoHelper(this, texture, isVideoMode, PHONE_ORIENTATION_LANDSCAPE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

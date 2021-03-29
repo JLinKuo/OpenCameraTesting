@@ -13,12 +13,17 @@ import java.io.*
 
 private const val MAX_IMAGE_LENGTH = 640
 
-class CameraVideoHelper(mainActivity: MainActivity, texture: ViewGroup) {
-    val cameraInterface by lazy { CameraInterface(mainActivity) }
-    val preview by lazy { Preview(cameraInterface, texture) }
-
+class CameraVideoHelper(
+        mainActivity: MainActivity,
+        texture: ViewGroup,
+        isVideoMode: Boolean,
+        orientation: String
+) {
     private lateinit var videoFile: File
     private lateinit var imageFile: File
+
+    val cameraInterface by lazy { CameraInterface(mainActivity, isVideoMode, orientation) }
+    val preview by lazy { Preview(cameraInterface, texture) }
 
     fun setBackFrontCamera(cameraId: Int): CameraVideoHelper {
         cameraInterface.cameraIdPref = cameraId
