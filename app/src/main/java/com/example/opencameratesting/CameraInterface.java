@@ -15,6 +15,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 
 import com.example.opencameratesting.opencamera.CameraController.RawImage;
+import com.example.opencameratesting.opencamera.CameraVideoHelper;
 import com.example.opencameratesting.opencamera.GyroSensor;
 import com.example.opencameratesting.opencamera.LocationSupplier;
 import com.example.opencameratesting.opencamera.MyDebug;
@@ -47,6 +48,7 @@ public class CameraInterface extends BasicApplicationInterface {
     }
 
     private final MainActivity mainActivity;
+    private CameraVideoHelper cameraVideoHelper;
     private final LocationSupplier locationSupplier;
     private final DrawPreview drawPreview;
     private final GyroSensor gyroSensor;
@@ -64,8 +66,14 @@ public class CameraInterface extends BasicApplicationInterface {
     private String orientation = "landscape";
     private TakePhotoListener takePhotoListener;
 
-    public CameraInterface(MainActivity activity, boolean isVideoMode, String orientation) {
+    public CameraInterface(
+            MainActivity activity,
+            CameraVideoHelper cameraVideoHelper,
+            boolean isVideoMode,
+            String orientation
+    ) {
         this.mainActivity = activity;
+        this.cameraVideoHelper = cameraVideoHelper;
         this.drawPreview = new DrawPreview(mainActivity, this);
         this.gyroSensor = new GyroSensor(mainActivity);
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainActivity);
@@ -596,7 +604,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public void stoppedVideo(int video_method, Uri uri, String filename) {
-        super.stoppedVideo(video_method, uri, filename);
+        cameraVideoHelper.saveVideo(filename);
     }
 
     @Override
@@ -851,7 +859,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public File createOutputVideoFile(String extension) throws IOException {
-        return null;
+        return cameraVideoHelper.getVideoFile();
     }
 
     @Override
@@ -893,7 +901,7 @@ public class CameraInterface extends BasicApplicationInterface {
         if( MyDebug.LOG )
             Log.d(TAG, "n_capture_images is now " + n_capture_images);
 
-        boolean success = false; //mainActivity.saveImage(data);
+        boolean success = cameraVideoHelper.saveImage(data);
 
         if( MyDebug.LOG )
             Log.d(TAG, "onPictureTaken complete, success: " + success);

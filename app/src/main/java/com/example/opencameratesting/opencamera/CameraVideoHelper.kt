@@ -22,7 +22,7 @@ class CameraVideoHelper(
     private lateinit var videoFile: File
     private lateinit var imageFile: File
 
-    val cameraInterface by lazy { CameraInterface(mainActivity, isVideoMode, orientation) }
+    val cameraInterface by lazy { CameraInterface(mainActivity, this, isVideoMode, orientation) }
     val preview by lazy { Preview(cameraInterface, texture) }
 
     fun setBackFrontCamera(cameraId: Int): CameraVideoHelper {
