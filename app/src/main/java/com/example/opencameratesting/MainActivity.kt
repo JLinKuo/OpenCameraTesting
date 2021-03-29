@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.SeekBar
+import com.example.opencameratesting.opencamera.CameraVideoHelper
 import com.example.opencameratesting.opencamera.Preview.Preview
 import com.permissionx.guolindev.PermissionX
 import java.io.FileOutputStream
@@ -18,9 +19,6 @@ private const val PHONE_ORIENTATION_LANDSCAPE = "landscape"
 private const val PHONE_ORIENTATION_PORTRAIT = "portrait"
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var cameraInterface: CameraInterface
-    private lateinit var preview: Preview
 
     private val listPermissions by lazy {
         ArrayList<String>().apply {
@@ -33,35 +31,31 @@ class MainActivity : AppCompatActivity() {
     private val texture: FrameLayout by lazy { findViewById(R.id.texture) }
     private val zoomSeekbar: SeekBar by lazy { findViewById(R.id.zoom_seekbar) }
 
+    private val cameraVideoHelper by lazy { CameraVideoHelper(this, texture) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         chkPermission()
-        initTakePhotoState()
     }
 
     override fun onResume() {
         super.onResume()
-        preview.onResume()
+        cameraVideoHelper.preview.onResume()
     }
 
     override fun onPause() {
-        preview.onPause()
+        cameraVideoHelper.preview.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
-        preview.onDestroy()
+        cameraVideoHelper.preview.onDestroy()
         super.onDestroy()
     }
 
-    private fun initTakePhotoState() {
-        cameraInterface = CameraInterface(this)
-        preview = Preview(cameraInterface, texture)
-    }
-
-    fun getPreview() = preview
+    fun getPreview() = cameraVideoHelper.preview
 
     private fun chkPermission() {
         PermissionX.init(this)
@@ -89,18 +83,18 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    fun getApplicationInterface() = cameraInterface
+    fun getApplicationInterface() = cameraVideoHelper.cameraInterface
 
     fun cameraSetup() {
         zoomSeekbar.apply {
             setOnSeekBarChangeListener(null)
-            max = preview.maxZoom
-            progress = preview.maxZoom - preview.cameraController.zoom
+            max = cameraVideoHelper.preview.maxZoom
+            progress = cameraVideoHelper.preview.maxZoom - cameraVideoHelper.preview.cameraController.zoom
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     // note we zoom even if !fromUser, as various other UI controls (multitouch, volume key zoom, -/+ zoomcontrol)
                     // indirectly set zoom via this method, from setting the zoom slider
-                    preview.zoomTo(preview.maxZoom - progress)
+                    cameraVideoHelper.preview.zoomTo(cameraVideoHelper.preview.maxZoom - progress)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -111,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setSeekbarZoom(new_zoom: Int) {
-        zoomSeekbar.progress = preview.maxZoom - new_zoom
+        zoomSeekbar.progress = cameraVideoHelper.preview.maxZoom - new_zoom
     }
 
 //    fun saveImage(image: ByteArray): Boolean {
