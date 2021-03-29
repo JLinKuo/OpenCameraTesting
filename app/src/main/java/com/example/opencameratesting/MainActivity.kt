@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         chkPermission()
-        initTakePhotoState(savedInstanceState)
+        initTakePhotoState()
     }
 
     override fun onResume() {
@@ -56,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    private fun initTakePhotoState(savedInstanceState: Bundle?) {
-        cameraInterface = CameraInterface(this, null)
+    private fun initTakePhotoState() {
+        cameraInterface = CameraInterface(this)
         preview = Preview(cameraInterface, texture)
     }
 

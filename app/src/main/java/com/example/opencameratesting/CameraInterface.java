@@ -61,7 +61,7 @@ public class CameraInterface extends BasicApplicationInterface {
     private boolean used_front_screen_flash;
     private final Rect text_bounds = new Rect();
 
-    public CameraInterface(MainActivity activity, Bundle savedInstanceState) {
+    public CameraInterface(MainActivity activity) {
         this.mainActivity = activity;
         this.drawPreview = new DrawPreview(mainActivity, this);
         this.gyroSensor = new GyroSensor(mainActivity);
