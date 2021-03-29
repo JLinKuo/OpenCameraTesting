@@ -60,6 +60,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     private boolean used_front_screen_flash;
     private final Rect text_bounds = new Rect();
+    private TakePhotoListener takePhotoListener;
 
     public CameraInterface(MainActivity activity) {
         this.mainActivity = activity;
@@ -172,6 +173,10 @@ public class CameraInterface extends BasicApplicationInterface {
 
     LocationSupplier getLocationSupplier() {
         return locationSupplier;
+    }
+
+    public void setTakePhotoListener(TakePhotoListener listener) {
+        this.takePhotoListener = listener;
     }
 
     public boolean isMockLocation(Location location) {
@@ -811,6 +816,9 @@ public class CameraInterface extends BasicApplicationInterface {
     @Override
     public void onPictureCompleted() {
         super.onPictureCompleted();
+        if(takePhotoListener != null) {
+            takePhotoListener.onTakePhotoFinished();
+        }
     }
 
     @Override
@@ -885,11 +893,15 @@ public class CameraInterface extends BasicApplicationInterface {
         return success;
     }
 
-    void onDestroy() {
+    public void onDestroy() {
         if( MyDebug.LOG )
             Log.d(TAG, "onDestroy");
         if( drawPreview != null ) {
             drawPreview.onDestroy();
         }
+    }
+
+    public interface TakePhotoListener {
+        void onTakePhotoFinished();
     }
 }

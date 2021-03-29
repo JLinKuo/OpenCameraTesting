@@ -36,6 +36,10 @@ class CameraVideoHelper(mainActivity: MainActivity, texture: ViewGroup) {
         preview.takePicturePressed(false, false)
     }
 
+    fun takeRecordingPhoto() {
+        preview.takePicturePressed(true, false)
+    }
+
     fun takeStillPhoto() {
         preview.takePicturePressed(false, false)
     }
