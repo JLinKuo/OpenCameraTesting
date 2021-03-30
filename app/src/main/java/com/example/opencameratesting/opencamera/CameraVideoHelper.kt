@@ -71,8 +71,14 @@ class CameraVideoHelper(
     }
 
     // 取得目前影片完整路徑及檔案名稱
-    fun setVideoFile(videoFile: File) {
-        this.videoFile = videoFile
+    fun setVideoFile(videoDir: File, fileName: String): File {
+        if(!videoDir.exists()) {
+            videoDir.mkdir()
+        }
+
+        return File(videoDir, fileName).apply {
+            videoFile = this
+        }
     }
 
     fun setImageFile(imageFileDir: File, fileName: String): File {
@@ -80,8 +86,9 @@ class CameraVideoHelper(
             imageFileDir.mkdir()
         }
 
-        this.imageFile = File(imageFileDir, fileName)
-        return this.imageFile
+        return File(imageFileDir, fileName).apply {
+            imageFile = this
+        }
     }
 
     fun setTakePhotoListener(listener: CameraInterface.TakePhotoListener?) {

@@ -36,12 +36,14 @@ class CameraFragment : Fragment() {
     }
 
     private lateinit var takePhoto: Button
+    private lateinit var recordVideo: Button
     private val fileDir by lazy {
         activity?.let {
             File(it.getExternalFilesDir(null), "$TEMP_SAVE_FILES_PATH")
         }
     }
     private lateinit var imageFile: File
+    private lateinit var videoFile: File
 
     private var isRecording = false
 
@@ -56,13 +58,7 @@ class CameraFragment : Fragment() {
         texture = view.findViewById(R.id.texture)
         zoomSeekbar = view.findViewById(R.id.zoom_seekbar)
         takePhoto = view.findViewById(R.id.take_photo)
-
-        cameraVideoHelper?.setTakePhotoListener {
-            activity?.let {
-                Toast.makeText(it, "${imageFile.absolutePath}", Toast.LENGTH_SHORT).show()
-                Glide.with(it).load(imageFile).into(showImage)
-            }
-        }
+        recordVideo = view.findViewById(R.id.record_video)
 
         takePhoto.setOnClickListener {
             fileDir?.let { fileDir ->
@@ -70,6 +66,26 @@ class CameraFragment : Fragment() {
                     imageFile = cameraVideoHelper.setImageFile(fileDir, "${System.currentTimeMillis()}.jpg")
                     cameraVideoHelper.takeStillPhoto()
                 }
+            }
+        }
+
+        recordVideo.setOnClickListener {
+            if(isRecording) {
+                cameraVideoHelper?.stopRecordingVideo()
+            } else {
+                fileDir?.let { fileDir ->
+                    cameraVideoHelper?.let { cameraVideoHelper ->
+                        videoFile = cameraVideoHelper.setVideoFile(fileDir, "${System.currentTimeMillis()}.mp4")
+                        cameraVideoHelper.startRecordingVideo()
+                    }
+                }
+            }
+        }
+
+        cameraVideoHelper?.setTakePhotoListener {
+            activity?.let {
+                Toast.makeText(it, "${imageFile.absolutePath}", Toast.LENGTH_SHORT).show()
+                Glide.with(it).load(imageFile).into(showImage)
             }
         }
 
