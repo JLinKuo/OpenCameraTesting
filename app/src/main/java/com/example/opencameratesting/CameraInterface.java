@@ -13,6 +13,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.opencameratesting.opencamera.CameraController.RawImage;
 import com.example.opencameratesting.opencamera.CameraVideoHelper;
 import com.example.opencameratesting.opencamera.GyroSensor;
@@ -570,7 +572,11 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public void cameraSetup() {
-//        mainActivity.cameraSetup();
+        Fragment fragment = cameraVideoHelper.getFragment();
+
+        if(fragment instanceof CameraFragment) {
+            ((CameraFragment)fragment).cameraSetup();
+        }
         drawPreview.clearContinuousFocusMove();
         // Need to cause drawPreview.updateSettings(), otherwise icons like HDR won't show after force-restart, because we only
         // know that HDR is supported after the camera is opened
@@ -686,7 +692,11 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public void multitouchZoom(int new_zoom) {
-//        mainActivity.setSeekbarZoom(new_zoom);
+        Fragment fragment = cameraVideoHelper.getFragment();
+
+        if(fragment instanceof CameraFragment) {
+            ((CameraFragment)fragment).setSeekbarZoom(new_zoom);
+        }
     }
 
     @Override

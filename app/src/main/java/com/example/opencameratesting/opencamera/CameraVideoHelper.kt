@@ -7,15 +7,15 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.media.MediaMetadataRetriever
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.opencameratesting.CameraInterface
-import com.example.opencameratesting.MainActivity
 import com.example.opencameratesting.opencamera.Preview.Preview
 import java.io.*
 
 private const val MAX_IMAGE_LENGTH = 640
 
 class CameraVideoHelper(
-    val activity: Activity,
+    val fragment: Fragment,
     texture: ViewGroup,
     isVideoMode: Boolean,
     orientation: String
@@ -63,7 +63,9 @@ class CameraVideoHelper(
         cameraInterface.onDestroy()
     }
 
-    fun getRotation() = activity.windowManager.defaultDisplay.rotation;
+    fun getActivity() = fragment.activity
+
+    fun getRotation() = fragment.activity?.windowManager?.defaultDisplay?.rotation;
 
     fun setVideoMode() {
         preview.switchVideo(true, true)
