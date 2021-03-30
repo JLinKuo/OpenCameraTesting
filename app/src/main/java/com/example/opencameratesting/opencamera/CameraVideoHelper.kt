@@ -1,6 +1,5 @@
 package com.example.opencameratesting.opencamera
 
-import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -76,8 +75,13 @@ class CameraVideoHelper(
         this.videoFile = videoFile
     }
 
-    fun setImageFile(imageFile: File) {
-        this.imageFile = imageFile
+    fun setImageFile(imageFileDir: File, fileName: String): File {
+        if(!imageFileDir.exists()) {
+            imageFileDir.mkdir()
+        }
+
+        this.imageFile = File(imageFileDir, fileName)
+        return this.imageFile
     }
 
     fun setTakePhotoListener(listener: CameraInterface.TakePhotoListener?) {
