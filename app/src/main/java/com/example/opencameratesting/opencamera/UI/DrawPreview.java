@@ -18,8 +18,8 @@ import android.util.Pair;
 import android.view.Surface;
 
 import com.example.opencameratesting.CameraInterface;
-import com.example.opencameratesting.MainActivity;
 import com.example.opencameratesting.opencamera.CameraController.CameraController;
+import com.example.opencameratesting.opencamera.CameraVideoHelper;
 import com.example.opencameratesting.opencamera.GyroSensor;
 import com.example.opencameratesting.opencamera.MyDebug;
 import com.example.opencameratesting.opencamera.PreferenceKeys;
@@ -34,7 +34,7 @@ import java.util.Locale;
 public class DrawPreview {
 	private static final String TAG = "DrawPreview";
 
-	private final MainActivity main_activity;
+	private final CameraVideoHelper cameraVideoHelper;
 	private final CameraInterface applicationInterface;
 
 	// store to avoid calling PreferenceManager.getDefaultSharedPreferences() repeatedly
@@ -171,11 +171,11 @@ public class DrawPreview {
 	private String OSDLine1;
 	private String OSDLine2;
 
-	public DrawPreview(MainActivity main_activity, CameraInterface applicationInterface) {
+	public DrawPreview(CameraVideoHelper cameraVideoHelper, CameraInterface applicationInterface) {
 		if( MyDebug.LOG )
 			Log.d(TAG, "DrawPreview");
-		this.main_activity = main_activity;
-		this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(main_activity);
+		this.cameraVideoHelper = cameraVideoHelper;
+		this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(cameraVideoHelper.getActivity());
 		this.applicationInterface = applicationInterface;
 		// n.b., don't call updateSettings() here, as it may rely on things that aren't yet initialise (e.g., the preview)
 		// see testHDRRestart
@@ -299,7 +299,7 @@ public class DrawPreview {
 	}
 
 	private Context getContext() {
-    	return main_activity;
+    	return cameraVideoHelper.getActivity();
     }
 
 	/** Sets a current thumbnail for a photo or video just taken. Used for thumbnail animation,
@@ -349,7 +349,7 @@ public class DrawPreview {
 	}
 
 	public void cameraInOperation(boolean in_operation) {
-    	if( in_operation && !main_activity.getPreview().isVideo() ) {
+    	if( in_operation && !cameraVideoHelper.getPreview().isVideo() ) {
     		taking_picture = true;
     	}
     	else {
@@ -601,7 +601,7 @@ public class DrawPreview {
     }
 
 	private void drawGrids(Canvas canvas) {
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		if( camera_controller == null ) {
 			return;
@@ -777,7 +777,7 @@ public class DrawPreview {
 	}
 
 	private void drawCropGuides(Canvas canvas) {
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		if( preview.isVideo() || preview_size_wysiwyg_pref ) {
 			String preference_crop_guide = sharedPreferences.getString(PreferenceKeys.ShowCropGuidePreferenceKey, "crop_guide_none");
@@ -1645,7 +1645,7 @@ public class DrawPreview {
 //	}
 
 	private void drawAngleLines(Canvas canvas) {
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		boolean has_level_angle = preview.hasLevelAngle();
 		if( camera_controller != null && !preview.isPreviewPaused() && has_level_angle && ( show_angle_line_pref || show_pitch_lines_pref || show_geo_direction_lines_pref ) ) {
@@ -1660,7 +1660,7 @@ public class DrawPreview {
 			int radius = (int) (radius_dps * scale + 0.5f); // convert dps to pixels
 			double angle = - preview.getOrigLevelAngle();
 			// see http://android-developers.blogspot.co.uk/2010/09/one-screen-turn-deserves-another.html
-		    int rotation = main_activity.getWindowManager().getDefaultDisplay().getRotation();
+		    int rotation = cameraVideoHelper.getRotation();
 		    switch (rotation) {
 	    	case Surface.ROTATION_90:
 	    	case Surface.ROTATION_270:
@@ -1901,7 +1901,7 @@ public class DrawPreview {
 //	}
 
 	private void doFocusAnimation(Canvas canvas, long time_ms) {
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		if( camera_controller != null && continuous_focus_moving && !taking_picture ) {
 			// we don't display the continuous focusing animation when taking a photo - and can also give the impression of having
@@ -2003,7 +2003,7 @@ public class DrawPreview {
 				Log.d(TAG, "onDrawPreview: need to update settings");
 			updateSettings();
 		}
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		int ui_rotation = preview.getUIRotation();
 
@@ -2101,7 +2101,7 @@ public class DrawPreview {
 		}
 
 		if( enable_gyro_target_spot ) {
-			GyroSensor gyroSensor = main_activity.getApplicationInterface().getGyroSensor();
+			GyroSensor gyroSensor = cameraVideoHelper.getCameraInterface().getGyroSensor();
 			if( gyroSensor.isRecording() ) {
 				gyroSensor.getRelativeInverseVector(transformed_gyro_direction, gyro_direction);
 				gyroSensor.getRelativeInverseVector(transformed_gyro_direction_up, gyro_direction_up);
@@ -2161,7 +2161,7 @@ public class DrawPreview {
     }
 
     private void setLastImageMatrix(Canvas canvas, Bitmap bitmap, int this_ui_rotation, boolean flip_front) {
-		Preview preview = main_activity.getPreview();
+		Preview preview = cameraVideoHelper.getPreview();
 		CameraController camera_controller = preview.getCameraController();
 		last_image_src_rect.left = 0;
 		last_image_src_rect.top = 0;

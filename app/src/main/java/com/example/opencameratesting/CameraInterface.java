@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
@@ -47,7 +46,6 @@ public class CameraInterface extends BasicApplicationInterface {
         Panorama
     }
 
-    private final MainActivity mainActivity;
     private CameraVideoHelper cameraVideoHelper;
     private final LocationSupplier locationSupplier;
     private final DrawPreview drawPreview;
@@ -67,17 +65,15 @@ public class CameraInterface extends BasicApplicationInterface {
     private TakePhotoListener takePhotoListener;
 
     public CameraInterface(
-            MainActivity activity,
             CameraVideoHelper cameraVideoHelper,
             boolean isVideoMode,
             String orientation
     ) {
-        this.mainActivity = activity;
         this.cameraVideoHelper = cameraVideoHelper;
-        this.drawPreview = new DrawPreview(mainActivity, this);
-        this.gyroSensor = new GyroSensor(mainActivity);
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        this.locationSupplier = new LocationSupplier(mainActivity);
+        this.drawPreview = new DrawPreview(cameraVideoHelper, this);
+        this.gyroSensor = new GyroSensor(cameraVideoHelper.getActivity());
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(cameraVideoHelper.getActivity());
+        this.locationSupplier = new LocationSupplier(cameraVideoHelper.getActivity());
         this.isVideoMode = isVideoMode;
         this.orientation = orientation;
 
@@ -574,7 +570,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public void cameraSetup() {
-        mainActivity.cameraSetup();
+//        mainActivity.cameraSetup();
         drawPreview.clearContinuousFocusMove();
         // Need to cause drawPreview.updateSettings(), otherwise icons like HDR won't show after force-restart, because we only
         // know that HDR is supported after the camera is opened
@@ -690,7 +686,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public void multitouchZoom(int new_zoom) {
-        mainActivity.setSeekbarZoom(new_zoom);
+//        mainActivity.setSeekbarZoom(new_zoom);
     }
 
     @Override
@@ -844,7 +840,7 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public Context getContext() {
-        return mainActivity;
+        return cameraVideoHelper.getActivity();
     }
 
     @Override

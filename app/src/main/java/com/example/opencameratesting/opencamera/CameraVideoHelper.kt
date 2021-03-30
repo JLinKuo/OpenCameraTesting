@@ -1,5 +1,6 @@
 package com.example.opencameratesting.opencamera
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -14,15 +15,15 @@ import java.io.*
 private const val MAX_IMAGE_LENGTH = 640
 
 class CameraVideoHelper(
-        mainActivity: MainActivity,
-        texture: ViewGroup,
-        isVideoMode: Boolean,
-        orientation: String
+    val activity: Activity,
+    texture: ViewGroup,
+    isVideoMode: Boolean,
+    orientation: String
 ) {
     private lateinit var videoFile: File
     private lateinit var imageFile: File
 
-    val cameraInterface by lazy { CameraInterface(mainActivity, this, isVideoMode, orientation) }
+    val cameraInterface by lazy { CameraInterface(this, isVideoMode, orientation) }
     val preview by lazy { Preview(cameraInterface, texture) }
 
     fun setBackFrontCamera(cameraId: Int): CameraVideoHelper {
@@ -61,6 +62,8 @@ class CameraVideoHelper(
         preview.onDestroy()
         cameraInterface.onDestroy()
     }
+
+    fun getRotation() = activity.windowManager.defaultDisplay.rotation;
 
     fun setVideoMode() {
         preview.switchVideo(true, true)
