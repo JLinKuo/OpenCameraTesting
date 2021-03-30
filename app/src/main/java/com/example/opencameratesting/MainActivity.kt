@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
     private val listPermissions by lazy {
         ArrayList<String>().apply {
             this.add("android.permission.CAMERA")
+            this.add("android.permission.RECORD_AUDIO")
         }
     }
 

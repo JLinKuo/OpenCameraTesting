@@ -440,17 +440,17 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public boolean getRecordAudioPref() {
-        return super.getRecordAudioPref();
+        return sharedPreferences.getBoolean(PreferenceKeys.getRecordAudioPreferenceKey(), true);
     }
 
     @Override
     public String getRecordAudioChannelsPref() {
-        return super.getRecordAudioChannelsPref();
+        return sharedPreferences.getString(PreferenceKeys.getRecordAudioChannelsPreferenceKey(), "audio_default");
     }
 
     @Override
     public String getRecordAudioSourcePref() {
-        return super.getRecordAudioSourcePref();
+        return sharedPreferences.getString(PreferenceKeys.getRecordAudioSourcePreferenceKey(), "audio_src_camcorder");
     }
 
     @Override
