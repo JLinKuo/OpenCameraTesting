@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import com.bumptech.glide.Glide
@@ -37,6 +39,7 @@ class CameraFragment : Fragment() {
 
     private lateinit var takePhoto: Button
     private lateinit var recordVideo: Button
+    private lateinit var recordVideoTakePhoto: Button
     private val fileDir by lazy {
         activity?.let {
             File(it.getExternalFilesDir(null), "$TEMP_SAVE_FILES_PATH")
@@ -59,6 +62,7 @@ class CameraFragment : Fragment() {
         zoomSeekbar = view.findViewById(R.id.zoom_seekbar)
         takePhoto = view.findViewById(R.id.take_photo)
         recordVideo = view.findViewById(R.id.record_video)
+        recordVideoTakePhoto = view.findViewById(R.id.record_video_take_photo)
 
         takePhoto.setOnClickListener {
             fileDir?.let { fileDir ->
@@ -71,13 +75,26 @@ class CameraFragment : Fragment() {
 
         recordVideo.setOnClickListener {
             if(isRecording) {
+                takePhoto.visibility = VISIBLE
+                recordVideoTakePhoto.visibility = GONE
                 cameraVideoHelper?.stopRecordingVideo()
             } else {
                 fileDir?.let { fileDir ->
                     cameraVideoHelper?.let { cameraVideoHelper ->
                         videoFile = cameraVideoHelper.setVideoFile(fileDir, "${System.currentTimeMillis()}.mp4")
                         cameraVideoHelper.startRecordingVideo()
+                        takePhoto.visibility = GONE
+                        recordVideoTakePhoto.visibility = VISIBLE
                     }
+                }
+            }
+        }
+
+        recordVideoTakePhoto.setOnClickListener {
+            fileDir?.let { fileDir ->
+                cameraVideoHelper?.let { cameraVideoHelper ->
+                    imageFile = cameraVideoHelper.setImageFile(fileDir, "${System.currentTimeMillis()}.jpg")
+                    cameraVideoHelper.takeRecordingPhoto()
                 }
             }
         }
