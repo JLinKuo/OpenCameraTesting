@@ -380,7 +380,8 @@ public class CameraInterface extends BasicApplicationInterface {
 
     @Override
     public String getLockOrientationPref() {
-        return orientation;
+        // 若要限定拍照方向，可以在這兒回傳"portrait"或"landscape"
+        return super.getLockOrientationPref();
     }
 
     @Override
