@@ -13,6 +13,9 @@ class MainActivity : AppCompatActivity() {
         ArrayList<String>().apply {
             this.add("android.permission.CAMERA")
             this.add("android.permission.RECORD_AUDIO")
+            this.add("android.permission.ACCESS_FINE_LOCATION")
+            this.add("android.permission.ACCESS_COARSE_LOCATION")
+            this.add("android.permission.ACCESS_BACKGROUND_LOCATION")
         }
     }
 
