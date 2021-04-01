@@ -181,7 +181,7 @@ public class CameraInterface extends BasicApplicationInterface {
         return PhotoMode.Standard;
     }
 
-    LocationSupplier getLocationSupplier() {
+    public LocationSupplier getLocationSupplier() {
         return locationSupplier;
     }
 

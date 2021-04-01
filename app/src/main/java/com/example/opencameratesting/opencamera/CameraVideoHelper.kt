@@ -1,5 +1,6 @@
 package com.example.opencameratesting.opencamera
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -51,10 +52,12 @@ class CameraVideoHelper(
 
     fun onResume() {
         preview.onResume()
+        setLocationOnOff(true)
     }
 
     fun onPause() {
         preview.onPause()
+        setLocationOnOff(false)
     }
 
     fun onDestroy() {
@@ -127,6 +130,16 @@ class CameraVideoHelper(
         }
 
         return isSaveSuccess
+    }
+
+    private fun setLocationOnOff(isEnable: Boolean) {
+        getActivity()?.let {
+            val sharedPreferences = it.getSharedPreferences("default_name", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putBoolean(PreferenceKeys.LocationPreferenceKey, isEnable)
+            editor.apply()
+            cameraInterface.locationSupplier.setupLocationListener()
+        }
     }
 
     private fun correctRotate(filePath: String): Matrix {

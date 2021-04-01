@@ -12,7 +12,6 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.opencameratesting.opencamera.CameraVideoHelper
-import com.example.opencameratesting.opencamera.PreferenceKeys
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -188,30 +187,16 @@ class CameraFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        cameraVideoHelper.preview.onResume()
-
-        // Setup Location Listener()
-        val sharedPreferences = requireContext().getSharedPreferences("default_name", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(PreferenceKeys.LocationPreferenceKey, true)
-        editor.apply()
-        cameraVideoHelper.cameraInterface.locationSupplier.setupLocationListener()
+        cameraVideoHelper.onResume()
     }
 
     override fun onPause() {
-        cameraVideoHelper.preview.onPause()
-
-        val sharedPreferences = requireContext().getSharedPreferences("default_name", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(PreferenceKeys.LocationPreferenceKey, false)
-        editor.apply()
-        cameraVideoHelper.cameraInterface.locationSupplier.setupLocationListener()
-
+        cameraVideoHelper.onPause()
         super.onPause()
     }
 
     override fun onDestroy() {
-        cameraVideoHelper.preview.onDestroy()
+        cameraVideoHelper.onDestroy()
         super.onDestroy()
     }
 
