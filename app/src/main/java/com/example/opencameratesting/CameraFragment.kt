@@ -3,6 +3,7 @@ package com.example.opencameratesting
 import android.content.Context
 import android.content.IntentSender.SendIntentException
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -29,10 +30,11 @@ private const val PHONE_ORIENTATION_LANDSCAPE = "landscape"
 private const val PHONE_ORIENTATION_PORTRAIT = "portrait"
 private const val REQUEST_CHECK_LOCATION_SETTINGS = 199
 
-class CameraFragment : Fragment() {
+class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
     private val isVideoMode by lazy { false }              // 表示在此頁面中的用法是錄影模式還是拍照模式
 
+    private lateinit var mask: View
     private lateinit var texture: FrameLayout
     private lateinit var zoomSeekbar: SeekBar
     private lateinit var showImage: ImageView
@@ -69,6 +71,7 @@ class CameraFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_camera, container, false)
 
+        activity.chkPermission(this)
         setView(view)
         setListener()
         setGPS()
@@ -124,6 +127,7 @@ class CameraFragment : Fragment() {
     private fun setView(view: View?) {
         view?.let {
             showImage = view.findViewById(R.id.showImage)
+            mask = view.findViewById(R.id.mask)
             texture = view.findViewById(R.id.texture)
             zoomSeekbar = view.findViewById(R.id.zoom_seekbar)
             takePhoto = view.findViewById(R.id.take_photo)
@@ -141,6 +145,7 @@ class CameraFragment : Fragment() {
                         "${System.currentTimeMillis()}.jpg"
                     )
                     cameraVideoHelper.takeStillPhoto()
+                    maskScreen()
                 }
             }
         }
@@ -150,6 +155,7 @@ class CameraFragment : Fragment() {
                 takePhoto.visibility = VISIBLE
                 recordVideoTakePhoto.visibility = GONE
                 cameraVideoHelper.stopRecordingVideo()
+                isRecording = false
             } else {
                 fileDir.let { fileDir ->
                     cameraVideoHelper.let { cameraVideoHelper ->
@@ -160,6 +166,7 @@ class CameraFragment : Fragment() {
                         cameraVideoHelper.startRecordingVideo()
                         takePhoto.visibility = GONE
                         recordVideoTakePhoto.visibility = VISIBLE
+                        isRecording = true
                     }
                 }
             }
@@ -179,6 +186,7 @@ class CameraFragment : Fragment() {
 
         cameraVideoHelper.setTakePhotoListener {
             activity.let {
+                showScreen()
                 Toast.makeText(it, "${imageFile.absolutePath}", Toast.LENGTH_SHORT).show()
                 Glide.with(it).load(imageFile).into(showImage)
             }
@@ -229,5 +237,21 @@ class CameraFragment : Fragment() {
         cameraVideoHelper.let {
             zoomSeekbar.progress = it.preview.maxZoom - new_zoom
         }
+    }
+
+    fun maskScreen() {
+        mask.visibility = VISIBLE
+    }
+
+    fun showScreen() {
+        mask.visibility = GONE
+    }
+
+    // MainActivity.PermissionListener
+    override fun allGrantListener() {
+        object: CountDownTimer(500, 500) {
+            override fun onFinish() { showScreen() }
+            override fun onTick(millisUntilFinished: Long) {}
+        }.start()
     }
 }

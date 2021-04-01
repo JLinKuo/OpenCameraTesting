@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        chkPermission()
         replaceFragment()
     }
 
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun chkPermission() {
+    fun chkPermission(listener: PermissionListener) {
         PermissionX.init(this)
             .permissions(listPermissions)
             .onExplainRequestReason { scope, deniedList ->
@@ -54,9 +53,15 @@ class MainActivity : AppCompatActivity() {
                 )
             }
             .request { allGranted, grantedList, deniedList ->
-                if (!allGranted) {
-
+                if (allGranted) {
+                    listener.allGrantListener()
+                } else {
+                    // todo: Dialog
                 }
             }
+    }
+
+    interface PermissionListener {
+        fun allGrantListener()
     }
 }
