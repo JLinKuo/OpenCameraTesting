@@ -14,6 +14,9 @@ import com.example.opencameratesting.opencamera.Preview.Preview
 import java.io.*
 
 private const val MAX_IMAGE_LENGTH = 640
+private const val CAMERA_FLASH_OFF = "flash_off"        // preview index: 0
+private const val CAMERA_FLASH_AUTO = "flash_auto"      // preview index: 1
+private const val CAMERA_FLASH_ON = "flash_on"          // preview index: 2
 
 class CameraVideoHelper(
     val fragment: Fragment,
@@ -76,6 +79,16 @@ class CameraVideoHelper(
 
     fun setVideoMode() {
         preview.switchVideo(true, true)
+    }
+
+    fun cameraFlashOff() {
+        preview.updateFlash(CAMERA_FLASH_OFF)
+    }
+    fun cameraFlashOn() {
+        preview.updateFlash(CAMERA_FLASH_ON)
+    }
+    fun cameraFlashAuto() {
+        preview.updateFlash(CAMERA_FLASH_AUTO)
     }
 
     // 取得目前影片完整路徑及檔案名稱

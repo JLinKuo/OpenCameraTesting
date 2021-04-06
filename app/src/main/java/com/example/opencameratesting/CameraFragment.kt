@@ -56,6 +56,7 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
                 }
     }
 
+    private lateinit var flash: ImageView
     private lateinit var takePhoto: Button
     private lateinit var recordVideo: Button
     private lateinit var recordVideoTakePhoto: Button
@@ -68,6 +69,8 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
     private var isRecording = false
 
     private lateinit var activity: MainActivity
+
+    private var flashStatus = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -139,6 +142,7 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
     private fun setView(view: View?) {
         view?.let {
+            flash = view.findViewById(R.id.flash)
             showImage = view.findViewById(R.id.showImage)
             mask = view.findViewById(R.id.mask)
             texture = view.findViewById(R.id.texture)
@@ -150,6 +154,28 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
     }
 
     private fun setListener() {
+        flash.setOnClickListener {
+            when(flashStatus % 3) {
+                // 透過字串flash_on、flash_auto、flash_off變化閃光燈狀態
+                0 -> {
+                    flash.setImageResource(R.drawable.ic_flash_on)
+                    flashStatus++
+                    cameraVideoHelper.cameraFlashOn()
+                }
+                1 -> {
+                    flash.setImageResource(R.drawable.ic_flash_auto)
+                    flashStatus++
+                    cameraVideoHelper.cameraFlashAuto()
+                }
+                2 -> {
+                    flash.setImageResource(R.drawable.ic_flash_off)
+                    flashStatus++
+                    cameraVideoHelper.cameraFlashOff()
+                }
+                else -> throw Exception("flashStatus error.")
+            }
+        }
+
         takePhoto.setOnClickListener {
             fileDir.let { fileDir ->
                 cameraVideoHelper.let { cameraVideoHelper ->
@@ -208,6 +234,7 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
     override fun onResume() {
         super.onResume()
+        initCameraState()
         cameraVideoHelper.onResume()
     }
 
@@ -258,6 +285,11 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
     fun showScreen() {
         mask.visibility = GONE
+    }
+
+    private fun initCameraState() {
+        cameraVideoHelper.cameraFlashOff()
+        flash.setImageResource(R.drawable.ic_flash_off)
     }
 
     // MainActivity.PermissionListener
