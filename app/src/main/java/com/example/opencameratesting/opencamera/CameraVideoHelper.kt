@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.media.MediaMetadataRetriever
+import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.opencameratesting.CameraInterface
@@ -89,6 +90,40 @@ class CameraVideoHelper(
     }
     fun cameraFlashAuto() {
         preview.updateFlash(CAMERA_FLASH_AUTO)
+    }
+
+    fun switchCamera() {
+        if (MyDebug.LOG)
+            Log.d(TAG, "switchCamera")
+        if (preview.isOpeningCamera) {
+            if (MyDebug.LOG)
+                cameraVideoErrorListener?.errOccurListener("already opening camera in background thread")
+            return
+        }
+        if (preview.canSwitchCamera()) {
+            val cameraId = getNextCameraId()
+            cameraInterface.reset()
+            preview.setCamera(cameraId)
+            // no need to call mainUI.setSwitchCameraContentDescription - this will be called from PreviewcameraSetup when the
+            // new camera is opened
+        }
+    }
+
+    /* Returns the cameraId that the "Switch camera" button will switch to.*/
+    private fun getNextCameraId(): Int {
+        if (MyDebug.LOG)
+            Log.d(TAG, "getNextCameraId")
+        var cameraId = preview.cameraId
+        if (MyDebug.LOG)
+            Log.d(TAG, "current cameraId: $cameraId")
+        if (this.preview.canSwitchCamera()) {
+            val n_cameras = preview.cameraControllerManager.numberOfCameras
+            cameraId = (cameraId + 1) % n_cameras     // JLin: 只是暫時為了切換前後鏡頭，註解掉，勿刪以防未來需要
+//            cameraId = (cameraId + 1) % 2               // JLin: 目前只開放切換前後鏡頭，故先 % 2
+        }
+        if (MyDebug.LOG)
+            Log.d(TAG, "next cameraId: $cameraId")
+        return cameraId
     }
 
     // 取得目前影片完整路徑及檔案名稱

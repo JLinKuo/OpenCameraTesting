@@ -57,6 +57,7 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
     }
 
     private lateinit var flash: ImageView
+    private lateinit var switchCamera: ImageView
     private lateinit var takePhoto: Button
     private lateinit var recordVideo: Button
     private lateinit var recordVideoTakePhoto: Button
@@ -143,6 +144,7 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
     private fun setView(view: View?) {
         view?.let {
             flash = view.findViewById(R.id.flash)
+            switchCamera = view.findViewById(R.id.switch_camera)
             showImage = view.findViewById(R.id.showImage)
             mask = view.findViewById(R.id.mask)
             texture = view.findViewById(R.id.texture)
@@ -174,6 +176,10 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
                 }
                 else -> throw Exception("flashStatus error.")
             }
+        }
+
+        switchCamera.setOnClickListener {
+            cameraVideoHelper.switchCamera()
         }
 
         takePhoto.setOnClickListener {

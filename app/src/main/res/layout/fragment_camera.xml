@@ -46,6 +46,16 @@
         />
 
     <ImageView
+        android:id="@+id/switch_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:src="@drawable/ic_photo_cam_reverse"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/flash"
+        />
+
+    <ImageView
         android:id="@+id/showImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
