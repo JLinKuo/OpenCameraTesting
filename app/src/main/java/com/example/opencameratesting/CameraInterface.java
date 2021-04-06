@@ -65,6 +65,7 @@ public class CameraInterface extends BasicApplicationInterface {
     private boolean isVideoMode = false;
     private String orientation = "landscape";
     private TakePhotoListener takePhotoListener;
+    private CameraVideoErrorListener cameraVideoErrorListener;
 
     public CameraInterface(
             CameraVideoHelper cameraVideoHelper,
@@ -187,6 +188,10 @@ public class CameraInterface extends BasicApplicationInterface {
 
     public void setTakePhotoListener(TakePhotoListener listener) {
         this.takePhotoListener = listener;
+    }
+
+    public void setCameraVideoErrorListener(CameraVideoErrorListener listener) {
+        this.cameraVideoErrorListener = listener;
     }
 
     public boolean isMockLocation(Location location) {
@@ -613,16 +618,22 @@ public class CameraInterface extends BasicApplicationInterface {
     @Override
     public void onFailedStartPreview() {
         super.onFailedStartPreview();
+        cameraVideoErrorListener.errOccurListener(
+                "called if failed to start camera preview");
     }
 
     @Override
     public void onCameraError() {
         super.onCameraError();
+        cameraVideoErrorListener.errOccurListener(
+                "called if the camera closes due to serious error");
     }
 
     @Override
     public void onPhotoError() {
         super.onPhotoError();
+        cameraVideoErrorListener.errOccurListener(
+                "callback for failing to take a photo");
     }
 
     @Override
@@ -633,26 +644,36 @@ public class CameraInterface extends BasicApplicationInterface {
     @Override
     public void onVideoError(int what, int extra) {
         super.onVideoError(what, extra);
+        cameraVideoErrorListener.errOccurListener(
+                "callback for errors when recording video (see MediaRecorder.OnErrorListener)");
     }
 
     @Override
     public void onVideoRecordStartError(VideoProfile profile) {
         super.onVideoRecordStartError(profile);
+        cameraVideoErrorListener.errOccurListener(
+                "callback for video recording failing to start");
     }
 
     @Override
     public void onVideoRecordStopError(VideoProfile profile) {
         super.onVideoRecordStopError(profile);
+        cameraVideoErrorListener.errOccurListener(
+                "callback for video recording being corrupted");
     }
 
     @Override
     public void onFailedReconnectError() {
         super.onFailedReconnectError();
+        cameraVideoErrorListener.errOccurListener(
+                "failed to reconnect camera after stopping video recording");
     }
 
     @Override
     public void onFailedCreateVideoFileError() {
         super.onFailedCreateVideoFileError();
+        cameraVideoErrorListener.errOccurListener(
+                "callback if unable to create file for recording video");
     }
 
     @Override
@@ -926,5 +947,9 @@ public class CameraInterface extends BasicApplicationInterface {
 
     public interface TakePhotoListener {
         void onTakePhotoFinished();
+    }
+
+    public interface CameraVideoErrorListener {
+        void errOccurListener(String errMsg);
     }
 }

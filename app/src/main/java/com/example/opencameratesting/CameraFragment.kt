@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.IntentSender.SendIntentException
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -32,6 +33,8 @@ private const val REQUEST_CHECK_LOCATION_SETTINGS = 199
 
 class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
+    private val TAG = javaClass.simpleName
+
     private val isVideoMode by lazy { false }              // 表示在此頁面中的用法是錄影模式還是拍照模式
 
     private lateinit var mask: View
@@ -41,6 +44,16 @@ class CameraFragment : Fragment(), MainActivity.PermissionListener {
 
     private val cameraVideoHelper by lazy {
         CameraVideoHelper(this, texture, isVideoMode, PHONE_ORIENTATION_LANDSCAPE)
+                .setTakePhotoListener {
+                    activity.let {
+                        showScreen()
+                        Toast.makeText(it, "${imageFile.absolutePath}", Toast.LENGTH_SHORT).show()
+                        Glide.with(it).load(imageFile).into(showImage)
+                    }
+                }
+                .setCameraVideoErrorListener {
+                    Log.d(TAG, "Camera Video Error: $it")
+                }
     }
 
     private lateinit var takePhoto: Button

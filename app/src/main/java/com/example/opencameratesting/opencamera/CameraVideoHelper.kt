@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.opencameratesting.CameraInterface
+import com.example.opencameratesting.CameraInterface.*
 import com.example.opencameratesting.opencamera.Preview.Preview
 import java.io.*
 
@@ -20,10 +21,14 @@ class CameraVideoHelper(
     isVideoMode: Boolean,
     orientation: String
 ) {
+    private val TAG = javaClass.simpleName
     private lateinit var videoFile: File
     private lateinit var imageFile: File
+    private var cameraVideoErrorListener: CameraVideoErrorListener? = null
 
-    val cameraInterface by lazy { CameraInterface(this, isVideoMode, orientation) }
+    val cameraInterface by lazy {
+        CameraInterface(this, isVideoMode, orientation)
+    }
     val preview by lazy { Preview(cameraInterface, texture) }
 
     fun setBackFrontCamera(cameraId: Int): CameraVideoHelper {
@@ -94,8 +99,15 @@ class CameraVideoHelper(
         }
     }
 
-    fun setTakePhotoListener(listener: CameraInterface.TakePhotoListener?) {
+    fun setTakePhotoListener(listener: TakePhotoListener?): CameraVideoHelper {
         cameraInterface.setTakePhotoListener(listener)
+        return this
+    }
+
+    fun setCameraVideoErrorListener(listener: CameraVideoErrorListener?): CameraVideoHelper {
+        cameraInterface.setCameraVideoErrorListener(listener)
+        cameraVideoErrorListener = listener
+        return this
     }
 
     // 取得目前影片完整路徑及檔案名稱
@@ -119,12 +131,14 @@ class CameraVideoHelper(
         } catch (e: IOException) {
             isSaveSuccess = false
             e.printStackTrace()
+            cameraVideoErrorListener?.errOccurListener("catch IOException @ saveImage @ $TAG: ${e.message}")
         } finally {
             if (null != output) {
                 try {
                     output.close()
                 } catch (e: IOException) {
                     e.printStackTrace()
+                    cameraVideoErrorListener?.errOccurListener("finally @ saveImage @ $TAG: ${e.message}")
                 }
             }
         }
@@ -174,6 +188,7 @@ class CameraVideoHelper(
             }
         } catch (e: IOException) {
             e.printStackTrace()
+            cameraVideoErrorListener?.errOccurListener("catch IOException @ correctRotate @ $TAG: ${e.message}")
         }
         return matrix
     }
@@ -196,8 +211,10 @@ class CameraVideoHelper(
             fos.close()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
+            cameraVideoErrorListener?.errOccurListener("catch FileNotFoundException @ flipPic @ $TAG: ${e.message}")
         } catch (e: IOException) {
             e.printStackTrace()
+            cameraVideoErrorListener?.errOccurListener("catch IOException @ flipPic @ $TAG: ${e.message}")
         }
     }
 
